@@ -40,8 +40,6 @@
       js/chrome.tabs.connect js/chrome.tabs
       (options->jsparams [tabId connectInfo]))))
 
-(def messages (messaging/messages))
-
 (defn send-message [tabId message responseCallback]
   (.sendMessage js/chrome.tabs tabId (clj->js message) responseCallback))
 

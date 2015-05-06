@@ -31,7 +31,17 @@
           (async/>! c (channel-from-port port)))))
     c))
 
-(def messages messaging/messages)
+(defn- message-event [message sender response-fn]
+  {:message (js->clj message) :sender (js->clj sender) :response-fn response-fn}) 
+
+(defn messages []
+  (let [ch (chan)]    
+    (.addListener js/chrome.runtime.onMessage 
+      (fn [message sender reply-fn]
+        (go
+          (async/>! ch (message-event message sender reply-fn)))
+        true))
+    ch))
 
 (defn send-message [message & options]
   (let [{:keys [extensionId options responseCallback]} (apply hash-map options)]
