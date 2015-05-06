@@ -1,6 +1,6 @@
 (ns khroma.tabs
-  (:require [khroma.log :as log]
-            [khroma.messaging :refer [channel-from-port chan]]
+  (:require [khroma.log :as console]
+            [khroma.messaging :refer [channel-from-port chan] :as messaging]
             [khroma.util :refer [options->jsparams]]
             [clojure.walk :as walk]
             [cljs.core.async :as async])
@@ -39,3 +39,10 @@
     (.apply     
       js/chrome.tabs.connect js/chrome.tabs
       (options->jsparams [tabId connectInfo]))))
+
+(def messages (messaging/messages))
+
+(defn send-message [tabId message responseCallback]
+  (.sendMessage js/chrome.tabs tabId (clj->js message) responseCallback))
+
+

@@ -1,7 +1,7 @@
 (ns khroma.runtime
   (:require 
             [khroma.log :as log]
-            [khroma.messaging :refer [channel-from-port chan]]
+            [khroma.messaging :refer [channel-from-port chan] :as messaging]
             [khroma.util :refer [options->jsparams]]
             [cljs.core.async :as async])
   (:require-macros 
@@ -31,18 +31,7 @@
           (async/>! c (channel-from-port port)))))
     c))
 
-
-(defn- message-event [message sender response-fn]
-  {:message (js->clj message) :sender (js->clj sender) :response-fn response-fn}) 
- 
-(defn messages []
-  (let [ch (chan)]    
-    (.addListener js/chrome.runtime.onMessage 
-      (fn [message sender reply-fn]
-        (go
-          (async/>! ch (message-event message sender reply-fn)))
-        true))
-    ch))
+(def messages messaging/messages)
 
 (defn send-message [message & options]
   (let [{:keys [extensionId options responseCallback]} (apply hash-map options)]
@@ -51,13 +40,3 @@
         (options->jsparams
           [extensionId message options responseCallback]))))
 
-
-
-
-
-
-
-      
-      
-    
-    
