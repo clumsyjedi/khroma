@@ -16,7 +16,7 @@
   (fn [& data]
     (go
       (if data (>! ch (js->clj (first data))))
-      (async/close ch))))
+      (async/close! ch))))
 
 (defn with-callback [f]
   (let [ch (async/chan)]
